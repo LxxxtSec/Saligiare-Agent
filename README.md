@@ -1,4 +1,3 @@
-````markdown
 # Saligiare
 
 Saligiare 是一个面向授权本地安全 benchmark 的可学习、可审计 Agent。
