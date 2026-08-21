@@ -10,6 +10,22 @@ Saligiare 是一个面向**授权本地 benchmark 环境**的安全 Agent 运行
 
 这是一个学习优先的项目。你亲手输入实现代码；导师在每个阶段提供小步设计、代码骨架、测试要求、复盘问题和代码审查反馈。
 
+## 当前进度
+
+截至本路线图更新时，研究阶段已经完成，当前分支为 `docs/research-agent-architecture`，并已同步到远程仓库。已完成的研究成果如下：
+
+| 状态 | 内容 | 主要产出 |
+| --- | --- | --- |
+| 已完成 | CHYing-agent 架构研究 | `docs/research/chying-agent.md` |
+| 已完成 | Cairn 黑板/DAG/Dispatcher 研究 | `docs/research/cairn.md` |
+| 已完成 | Whitzard、Sangfor、DoGNAVY、Velldepth、Atuin 研究 | `docs/research/*.md` |
+| 已完成 | TCH 第二届比赛复盘 | `docs/research/tch-retrospective.md` |
+| 已完成 | CyberGym 完整榜单快照和可复现性矩阵 | `docs/research/cybergym-leaderboard.md` |
+| 已完成 | 参考 Agent 到 Saligiare 组件的汇总 | `docs/research/benchmark-matrix.md` |
+| 下一步 | Phase 2：Task、Action、Observation、Result 和 Fake Runtime | 由你亲手实现 |
+
+研究分支可以作为学习资料保留。进入代码实现前，先将研究分支合并到 `main`，再从最新 `main` 创建小而聚焦的实现分支。不要在研究分支上混入 Phase 2 代码。
+
 完整的能力边界、运行模式、授权约束和后续扩展顺序见
 [`docs/能力蓝图.md`](能力蓝图.md)。能力蓝图将目标分为竞赛线、Real World CTF 与安全研究线、知识库线，避免把不同风险等级的工具混入同一个默认 Agent。
 
@@ -22,6 +38,41 @@ Saligiare 是一个面向**授权本地 benchmark 环境**的安全 Agent 运行
 5. benchmark 的特有细节必须放在适配器中，不能污染 Agent 核心。
 6. 每次实验要保存模型、提示词、工具、限制、Trace 和结果，以便复现。
 7. 每个小而聚焦的 Git commit 都必须让项目保持可运行。
+8. 所有命令由你亲自输入，所有核心实现由你亲自手敲；导师只负责解释、给出不完整骨架、设计测试和审查 diff。
+9. 任何需要真实目标、真实凭证或公共网络的操作，都必须先停在设计和 Fake Runtime 阶段，直到授权范围和隔离环境明确。
+
+## 学习协作契约
+
+### 你的职责
+
+- 在终端亲自输入目录、文件、虚拟环境、测试和 Git 命令。
+- 在编辑器中亲自输入核心 Python、测试和配置代码。
+- 每次提交前运行测试、Ruff、`git diff --check` 和 `git status`。
+- 用自己的话回答本阶段复盘问题，而不是只复制代码注释。
+- 发现长期有价值的问题时，补充 `docs/问题记录.md`；低级拼写、路径和重复命令错误不强制记录。
+
+### 导师的职责
+
+- 先解释目录、文件和接口的责任，再给最小代码骨架。
+- 不直接代写核心实现，不替你执行需要学习的命令，不跳过测试设计。
+- 通过失败测试、边界问题和反例帮助你理解设计。
+- 审查你提交的 diff，重点检查正确性、安全性、可测试性和可维护性。
+- 只有在你确认理解并通过验收后，才进入下一个组件。
+
+### 每个实操单元的固定节奏
+
+```text
+目标说明
+  -> 目录/文件职责
+  -> 你亲手创建文件
+  -> 你亲手写失败测试
+  -> 你亲手写最小实现
+  -> 运行测试和 lint
+  -> 解释失败路径和安全边界
+  -> 形成小 commit 并推送
+```
+
+导师可以提供命令和代码片段，但这些内容是教学材料，不代表已经替你完成；你应在本地逐行输入，并能够解释每一行的作用。
 
 ## 目标架构
 
@@ -105,6 +156,24 @@ Benchmark 适配器 -> Task -> Agent Runtime -> Policy Guard -> Sandbox Tools
 
 以下进度按每周投入 8-12 小时估算。只有取得列出的证据后才能进入下一阶段。一个阶段可以延长，但不可跳过验收门槛。
 
+### 阶段总览
+
+| 阶段 | 主题 | 当前状态 | 进入条件 | 退出证据 |
+| --- | --- | --- | --- | --- |
+| 0 | Python/Git/CI 基础 | 已完成 | 无 | 干净克隆可安装、测试和 lint |
+| 1 | 参考 Agent 研究 | 已完成 | Phase 0 稳定 | 研究笔记和能力矩阵完成 |
+| 2 | 核心协议与 Fake Runtime | 下一步 | 研究矩阵完成 | 无网络测试覆盖完整状态转换 |
+| 3 | 类型化工具与 Policy Guard | 待开始 | Phase 2 验收通过 | 非法动作安全拒绝并留 Trace |
+| 4 | 隔离执行 | 待开始 | Phase 3 验收通过 | 沙箱资源、目录、网络和清理测试通过 |
+| 5 | 模型适配与 Prompt 纪律 | 待开始 | Fake Runtime 稳定 | Fake/真实适配器产生相同已校验 Action |
+| 6 | TSECBENCH Local | 待开始 | 沙箱和适配器契约稳定 | 已授权样例任务端到端运行 |
+| 7 | 普通 CTF Benchmark | 待开始 | TSECBENCH 基线稳定 | 可复现实验报告和成本记录 |
+| 8 | CyberGym/代码漏洞任务 | 待开始 | Patch Task 协议完成 | pre/post patch evaluator 隔离运行 |
+| 8A | Linux Kernel 专线 | 规划中 | 通用源码任务稳定 | 内核源码证据和专用 VM 验证 |
+| 8B | WebKit 专线 | 规划中 | C++/源码任务和隔离稳定 | 固定提交版本回归验证 |
+| 9 | Agent 安全评测 | 规划中 | 工具和 Trace 稳定 | 注入和混淆代理测试通过 |
+| 10 | 评测平台与持续迭代 | 持续 | 至少一个真实适配器 | 新贡献者可复现实验 |
+
 ### Phase 0：可复现的工程基础（第 1 周）
 
 **学习内容**
@@ -157,6 +226,11 @@ chore: bootstrap Saligiare project
 ```text
 docs/research/chying-agent.md
 docs/research/cairn.md
+docs/research/whitzard.md
+docs/research/sangfor-cybergym.md
+docs/research/deepsec-dognavy.md
+docs/research/velldepth.md
+docs/research/atuin.md
 docs/research/tch-retrospective.md
 docs/research/cybergym-leaderboard.md
 docs/research/benchmark-matrix.md
@@ -170,7 +244,7 @@ docs/research/benchmark-matrix.md
 4. 每条架构结论都引用文件路径或 URL。
 5. 严格区分“观察到的事实”和“自己的设计决定”。
 
-**验收门槛**：为每个 Agent 画出 `观察 -> 决策 -> 工具 -> 观察` 的循环，并写出停止条件和缺失的安全控制。
+**验收门槛**：为每个 Agent 画出 `观察 -> 决策 -> 工具 -> 观察` 的循环，并写出停止条件和缺失的安全控制。当前已完成，下一步不再继续无边界扩展资料，而是把研究结论转成最小协议。
 
 ### Phase 2：领域协议和 Fake Runtime（第 3-4 周）
 
@@ -214,6 +288,22 @@ test: cover agent stopping conditions
 ```
 
 **验收门槛**：展示三个通过的测试：Fake Model 完成两次工具调用、触发最大步数、记录策略拒绝。
+
+#### Phase 2 实操顺序
+
+Phase 2 不一次创建全部目录。每个小单元都先写测试，再写实现；上一单元通过后才进入下一单元。
+
+| 小单元 | 你亲手创建 | 先学什么 | 最小验收 |
+| --- | --- | --- | --- |
+| 2A Task | `core/task.py`、`tests/core/test_task.py` | Pydantic 字段、不可变任务边界、枚举和预算 | 合法任务可构造；缺少 ID、非法模式和超范围预算会失败 |
+| 2B Action | `core/action.py`、`tests/core/test_action.py` | 工具名、参数模型、模型输出为何不可信 | 合法动作可解析；未知工具名和额外字段可控失败 |
+| 2C Observation | `core/observation.py`、`tests/core/test_observation.py` | 工具结果和可信证据的区别、输出截断 | 观察能关联动作；过大摘要和非法状态会失败 |
+| 2D Result | `core/result.py`、`tests/core/test_result.py` | 候选结果、评测回执和不确定性 | 模型不能伪造 accepted verdict |
+| 2E Fake Model | `models/base.py`、`models/fake.py`、`tests/models/` | Protocol、依赖注入和确定性响应 | 同一输入得到可预测动作序列 |
+| 2F Runtime State | `agent/state.py`、`tests/agent/test_state.py` | 状态转换、预算扣减和事件记录 | 每次转换可解释、可测试、可重放 |
+| 2G Agent Loop | `agent/loop.py`、`tests/agent/test_loop.py` | 停止条件、失败恢复和最大步数 | 成功、拒绝、超时和最大步数全部停止 |
+
+导师在每个小单元只提供：字段设计说明、一个不完整骨架、失败测试目标和复盘问题。你完成后再提交代码，导师进行审查。
 
 ### Phase 3：类型化工具和 Policy Guard（第 5-6 周）
 
@@ -520,6 +610,16 @@ git switch -c feat/<small-topic>
 
 示例：`feat/task-protocol`、`feat/fake-model`、`docs/chying-analysis`。
 
+如果上一台电脑停留在研究分支或某个功能分支，先确认远程状态，再决定是否继续：
+
+```bash
+git fetch origin
+git branch -vv
+git status --short --branch
+```
+
+不要直接在有未提交改动的目录切换分支。先完成提交、推送，或明确保存到 stash；不要用破坏性命令丢弃未理解的改动。
+
 ### 完成一个聚焦改动
 
 ```bash
@@ -532,6 +632,19 @@ git push -u origin feat/<small-topic>
 ```
 
 创建 Pull Request，等待 CI 完成，审查 diff 后再合并至 `main`。
+
+### 学习型提交规则
+
+每个实操单元都遵循以下顺序：
+
+1. 导师先说明本单元目标、文件职责、失败路径和安全边界。
+2. 你亲手执行目录/文件创建命令，并在编辑器中逐行输入代码。
+3. 你先运行针对本单元的失败测试，再补充最小实现。
+4. 你运行完整测试、Ruff 和 `git diff --check`。
+5. 你用自己的话回答复盘问题，再创建一个小 commit。
+6. 导师只审查你提交的 diff；未通过验收前不扩展到下一个组件。
+
+核心实现、测试和 Git 命令不会由导师在后台替你完成。文档类修改可以由导师根据研究结果直接整理，但涉及学习目标的源码必须由你输入。
 
 ### 换电脑后恢复环境
 
@@ -589,6 +702,29 @@ Saligiare/
   README.md
 ```
 
+目录职责：
+
+| 路径 | 用途 | 当前阶段是否使用 |
+| --- | --- | --- |
+| `.github/workflows/` | CI 自动运行测试和 lint，保证另一台电脑或 PR 环境也能验证 | Phase 0 起 |
+| `benchmarks/` | 受版本控制的任务样例、适配器夹具和公开协议；不放私有题目或密钥 | Phase 2 以后 |
+| `docker/sandbox/` | 隔离执行环境的 Docker 构建文件和固定配置 | Phase 4 以后 |
+| `docs/research/` | 参考 Agent、Benchmark 和技术报告的证据型研究笔记 | Phase 1 已使用 |
+| `docs/benchmarks/` | Saligiare 自己的 benchmark 适配说明、版本和运行手册 | Phase 6 以后 |
+| `docs/experiments/` | 每次实验的模型、Prompt、预算、Trace、结果和限制 | Phase 2 起逐步使用 |
+| `docs/decisions/` | 重要架构决策及其证据、替代方案和后果 | Phase 2 起逐步使用 |
+| `src/saligiare/core/` | 与具体模型、工具和 benchmark 无关的核心协议 | Phase 2 |
+| `src/saligiare/agent/` | Runtime 状态、循环、停止和恢复逻辑 | Phase 2 |
+| `src/saligiare/models/` | Fake Model 和未来的模型厂商适配器 | Phase 2/5 |
+| `src/saligiare/tools/` | 有类型的工具注册、调用和结构化结果 | Phase 3 |
+| `src/saligiare/security/` | Policy Guard、审批、审计和信任边界 | Phase 3/9 |
+| `src/saligiare/sandbox/` | Docker、VM、模拟器等隔离执行后端 | Phase 4 |
+| `src/saligiare/benchmarks/` | TSECBENCH、CyberGym、CTF 等外部协议适配器 | Phase 6 以后 |
+| `src/saligiare/evaluation/` | 可信评测器、指标、报告和实验注册 | Phase 5/6 以后 |
+| `src/saligiare/analysis/` | 内核、C/C++、WebKit 等源码分析能力 | Phase 8A/8B |
+| `tests/` | 单元、集成、沙箱和安全回归测试 | 每个阶段 |
+| `research/` | 被 `.gitignore` 忽略的外部仓库研究副本 | Phase 1 |
+
 ## 每次实验必须记录的内容
 
 每次 benchmark 运行都必须在 `docs/experiments/` 或受版本控制的机器可读实验注册表中创建记录。至少包含：
@@ -610,8 +746,8 @@ Trace 位置
 
 ## 问题与解决记录
 
-开发过程中遇到的命令错误、设计疑问、环境问题和解决证据统一记录在
-[`docs/问题记录.md`](问题记录.md)。每次解决问题后，要补充原因、验证证据和可复用经验。
+长期有价值的设计疑问、环境阻塞、权限/依赖问题和解决证据统一记录在
+[`docs/问题记录.md`](问题记录.md)。低级拼写、路径、重复执行和可以立即纠正的命令错误不强制记录；只有当它暴露出可复用的工程经验时才写入。
 
 ## 如何定义真实进展
 
@@ -624,14 +760,14 @@ Trace 位置
 5. 有用自己语言写成的学习日志解释。
 6. 使用了已授权环境，并保留可审计 Trace。
 
-## 第一次工作会话清单
+## 下一次工作会话清单
 
-1. 在 GitHub 创建名为 `Saligiare` 的私有仓库。
-2. 按 Phase 0 建立 Python 项目和 CI。
-3. 使用 `docs: add Saligiare learning roadmap` 提交本路线图。
-4. 验证新克隆目录能安装依赖并运行 smoke test。
-5. 创建 GitHub Issue：`research: map CHYing-agent runtime`。
-6. 从 Phase 1 开始，只写项目结构图，不执行安全代码。
+1. 将 `docs/research-agent-architecture` 合并到 `main`，确认远程 `main` 包含全部研究文档。
+2. 从最新 `main` 创建 `feat/phase2-task-protocol`。
+3. 只完成 Phase 2A：`Task` 协议和对应测试，不提前创建真实 Shell、Docker 或模型 API。
+4. 运行本单元测试、完整测试、Ruff 和 `git diff --check`。
+5. 写一段学习记录：解释 `Task` 为什么拥有 scope、capability、budget 和 evaluator，而不是只保存自然语言题目。
+6. 提交并推送一个小 commit，等待导师审查后再进入 2B `Action`。
 
 ## 与导师对话时的提交格式
 
