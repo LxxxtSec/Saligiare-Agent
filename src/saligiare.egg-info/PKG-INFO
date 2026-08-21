@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: saligiare
+Version: 0.1.0
+Summary: 一个可学习、可审计的安全 Agent
+Requires-Python: <3.14,>=3.11
+Requires-Dist: pydantic<3,>=2.7
+Provides-Extra: dev
+Requires-Dist: pytest<9,>=8; extra == "dev"
+Requires-Dist: ruff<1,>=0.6; extra == "dev"

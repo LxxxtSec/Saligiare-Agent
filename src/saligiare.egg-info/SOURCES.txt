@@ -1,0 +1,9 @@
+README.md
+pyproject.toml
+src/saligiare/__init__.py
+src/saligiare.egg-info/PKG-INFO
+src/saligiare.egg-info/SOURCES.txt
+src/saligiare.egg-info/dependency_links.txt
+src/saligiare.egg-info/requires.txt
+src/saligiare.egg-info/top_level.txt
+tests/test_smoke.py
