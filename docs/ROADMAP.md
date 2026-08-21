@@ -74,6 +74,11 @@ Benchmark 适配器 -> Task -> Agent Runtime -> Policy Guard -> Sandbox Tools
 | --- | --- | --- |
 | CHYing-agent | Prompt、工具调用、状态和停止条件如何组织？ | `docs/research/chying-agent.md` |
 | Cairn | 长时间运行任务和工具编排如何组织？ | `docs/research/cairn.md` |
+| Whitzard | CyberGym 漏洞复现中的证据、可达性见证和 fixed-clean 验证如何组织？ | `docs/research/whitzard.md` |
+| Sangfor AI CyberGym 提交 | Agent Swarm 如何并行探索假设并收敛到单一最终 PoC？ | `docs/research/sangfor-cybergym.md` |
+| DeepSec DoGNAVY | 多阶段漏洞复现、独立 Review、沙箱和 validator 隔离如何组织？ | `docs/research/deepsec-dognavy.md` |
+| Alibaba Velldepth | 结构化 harness、多候选审查和 double-crash 问题如何影响 CyberGym？ | `docs/research/velldepth.md` |
+| Tencent Xuanwu Atuin | 源码、二进制和 JavaScript bundle 的多 Agent 工作流如何迁移到 CyberGym？ | `docs/research/atuin.md` |
 | TCH 比赛复盘 | 哪些任务拆分、工具反馈和失败恢复设计真正有效？ | `docs/research/tch-retrospective.md` |
 | CyberGym Leaderboard 及其链接 Agent | 哪些能力声明有代码、论文和可复现运行器支撑？ | `docs/research/cybergym-leaderboard.md` |
 
@@ -87,6 +92,14 @@ Benchmark 适配器 -> Task -> Agent Runtime -> Policy Guard -> Sandbox Tools
 6. 不可信指令或命令由谁执行？
 7. 有哪些安全控制和 Trace？
 8. Saligiare 应该采用、拒绝或重新设计什么？
+
+研究证据分级：
+
+```text
+源码与测试 > 官方技术报告 > 官方 README > 排行榜/宣传页面 > 二手文章
+```
+
+如果参考项目只公开 README 或技术报告，笔记必须明确标注“未检查源码”，不能把角色、权限和运行时细节写成已验证事实。
 
 ## 项目阶段
 
