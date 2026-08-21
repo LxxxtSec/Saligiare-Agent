@@ -6,6 +6,7 @@ Saligiare 是一个面向**授权本地 benchmark 环境**的安全 Agent 运行
 项目的目标不是宣称一个 Agent 必然通过所有 benchmark，而是亲手构建、理解、评测并持续改进一个 Agent：它能在可复现环境中执行任务，同时让工具调用、权限和结果都可审计。
 
 主要目标 benchmark 是 TSECBENCH Local。Cybench、InterCode-CTF、CyberGym、CyberSecEval 和 AgentDojo 是补充评测目标。
+在 Agent Runtime 稳定后，项目增加两条高级源码审计专线：Linux Kernel 源码审计，以及 WebKit/WebCore/JavaScriptCore 源码审计。
 
 这是一个学习优先的项目。你亲手输入实现代码；导师在每个阶段提供小步设计、代码骨架、测试要求、复盘问题和代码审查反馈。
 
@@ -54,6 +55,7 @@ Benchmark 适配器 -> Task -> Agent Runtime -> Policy Guard -> Sandbox Tools
 | 5 | CyberGym | 源码审查、PoC/测试、补丁和回归验证 | 已有 Patch Task 协议 |
 | 6 | CyberSecEval | 安全能力和滥用风险回归测试 | 基线运行可重复 |
 | 7 | AgentDojo / InjecAgent | 间接提示注入和工具调用安全 | 已有策略和 Trace 测试 |
+| 8 | Linux Kernel / WebKit 源码审计专线 | 大型 C/C++ 代码库中的漏洞线索、漏报分析和补丁验证 | 已有源码任务协议、构建和测试环境 |
 
 不要将公开排行榜分数等同于可复现性。必须分别记录：
 
@@ -335,7 +337,100 @@ docs/benchmarks/cybergym.md
 
 **验收门槛**：对一个已授权任务，Trace 中记录源码证据、benchmark 范围内的测试或 PoC、补丁和通过的回归评测。
 
-### Phase 9：Agent 安全评测（第 19-20 周）
+### Phase 8A：Linux Kernel 源码审计专线（第 19-22 周）
+
+这是一条建立在通用代码审计能力之上的高级专线，不在前期直接开始。目标是让 Agent 能在**授权的内核源码、专用测试镜像和离线分析环境**中发现漏洞线索、识别可能漏报的路径，并用测试或补丁验证判断。
+
+**学习内容**
+
+- C 语言内存模型、指针、并发、整数溢出和生命周期。
+- Linux Kernel 的系统调用、驱动、网络子系统、VFS、内存管理和权限边界。
+- Kconfig、Makefile、编译数据库、交叉编译和最小测试镜像。
+- 静态分析、调用图、数据流、锁分析和 Sanitizer 的证据边界。
+- KASAN、KCSAN、UBSAN、syzkaller 等工具的职责和限制。
+- 如何区分“可疑代码”“可触达路径”“可验证缺陷”和“已修复漏洞”。
+
+**你亲手输入的文件**
+
+```text
+src/saligiare/core/source_task.py
+src/saligiare/analysis/callgraph.py
+src/saligiare/analysis/dataflow.py
+src/saligiare/benchmarks/kernel/adapter.py
+src/saligiare/benchmarks/kernel/evaluator.py
+tests/analysis/
+tests/benchmarks/kernel/
+docs/benchmarks/kernel-audit.md
+docs/research/kernel-tools.md
+```
+
+**建议的任务形态**
+
+```text
+源码版本和配置
+    -> 静态证据收集
+    -> 调用路径和数据流假设
+    -> 最小化测试或验证程序
+    -> 缺陷分类和置信度
+    -> 补丁候选
+    -> 编译、测试和回归验证
+```
+
+**安全边界**
+
+- 只分析明确授权的源码版本和离线镜像。
+- 不连接生产内核、真实设备或不属于你的系统。
+- 运行内核测试时使用专用虚拟机或容器，禁止访问宿主机敏感目录。
+- Agent 的结论必须引用源码位置、调用路径和测试证据，不能只输出“看起来有漏洞”。
+
+**验收门槛**：完成一个可复现的内核源码审计任务，Trace 中包含源码版本、配置、分析命令、证据位置、测试结果、补丁候选和已知不确定性。不能把静态分析告警直接当成漏洞。
+
+### Phase 8B：WebKit 源码审计专线（第 23-26 周）
+
+WebKit 不是普通的 Web 漏洞题。它包含大型 C++ 代码库、JavaScriptCore、WebCore、渲染流程、进程间通信和沙箱边界，因此需要在内核专线之后学习。
+
+**学习内容**
+
+- C++ 对象生命周期、智能指针、引用计数、类型转换和异常安全。
+- WebKit 的 WebCore、JavaScriptCore、网络进程、Web 进程和 GPU 进程边界。
+- IPC 消息、序列化/反序列化、权限检查和跨进程信任边界。
+- 构建系统、编译数据库、单元测试、布局测试和回归测试。
+- Clang 静态分析、CodeQL、AddressSanitizer、UndefinedBehaviorSanitizer 和模糊测试。
+- 如何在复杂调用链中追踪输入、状态变化和生命周期风险。
+
+**你亲手输入的文件**
+
+```text
+src/saligiare/analysis/cpp_lifetime.py
+src/saligiare/analysis/ipc_boundary.py
+src/saligiare/benchmarks/webkit/adapter.py
+src/saligiare/benchmarks/webkit/evaluator.py
+tests/benchmarks/webkit/
+docs/benchmarks/webkit-audit.md
+docs/research/webkit-architecture.md
+```
+
+**建议的任务形态**
+
+```text
+固定 WebKit 提交版本
+    -> 构建和测试环境检查
+    -> 输入来源和跨进程路径追踪
+    -> 生命周期 / IPC / 边界假设
+    -> 最小测试或回归用例
+    -> 修复候选和回归验证
+```
+
+**安全边界**
+
+- 优先使用公开源码、离线构建和专用测试夹具。
+- 不对真实浏览器用户、生产服务或第三方网站进行测试。
+- 浏览器测试进程必须在隔离环境中运行，并限制文件、网络和进程权限。
+- 任何输入样本都要标记来源和授权范围，避免把不可信页面内容当成 Agent 指令。
+
+**验收门槛**：完成一个固定 WebKit 版本的源码审计任务，能够展示从输入来源到代码位置的证据链，并通过编译、测试或回归用例验证结论。
+
+### Phase 9：Agent 安全评测（第 27-28 周）
 
 **学习内容**
 
@@ -461,6 +556,7 @@ Saligiare/
     decisions/
   src/saligiare/
     agent/
+    analysis/
     benchmarks/
     core/
     evaluation/
@@ -468,6 +564,8 @@ Saligiare/
     sandbox/
     security/
     tools/
+  docs/benchmarks/kernel-audit.md
+  docs/benchmarks/webkit-audit.md
   tests/
   .env.example
   .gitignore

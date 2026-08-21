@@ -1,0 +1,22 @@
+[project]
+name = "saligiare"
+version = "0.1.0"
+description = "一个可学习、可审计的安全 Agent"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "pydantic>=2.7,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8,<9",
+    "ruff>=0.6,<1",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
