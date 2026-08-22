@@ -23,7 +23,8 @@ Saligiare 是一个面向**授权本地 benchmark 环境**的安全 Agent 运行
 | 已完成 | CyberGym 完整榜单快照和可复现性矩阵 | `docs/research/cybergym-leaderboard.md` |
 | 已完成 | 参考 Agent 到 Saligiare 组件的汇总 | `docs/research/benchmark-matrix.md` |
 | 已完成 | Phase 2：Task、Action、Observation、Result、Fake Runtime 和最小 Agent Loop | 32 个测试通过，已推送 |
-| 下一步 | Phase 3：Tool Registry 和 Policy Guard | 由你亲手实现 |
+| 已完成 | Phase 3：Tool Registry、Policy Guard、AuditLog 和 ToolRunner | 57 个测试通过，已推送 |
+| 下一步 | Phase 4：隔离执行接口和 Sandbox | 先实现 Fake Sandbox |
 
 研究分支可以作为学习资料保留。进入代码实现前，先将研究分支合并到 `main`，再从最新 `main` 创建小而聚焦的实现分支。不要在研究分支上混入 Phase 2 代码。
 
@@ -164,8 +165,8 @@ Benchmark 适配器 -> Task -> Agent Runtime -> Policy Guard -> Sandbox Tools
 | 0 | Python/Git/CI 基础 | 已完成 | 无 | 干净克隆可安装、测试和 lint |
 | 1 | 参考 Agent 研究 | 已完成 | Phase 0 稳定 | 研究笔记和能力矩阵完成 |
 | 2 | 核心协议与 Fake Runtime | 已完成 | 研究矩阵完成 | 32 个无网络测试通过，覆盖状态转换和停止条件 |
-| 3 | 类型化工具与 Policy Guard | 进行中 | Phase 2 验收通过 | 非法动作安全拒绝并留 Trace |
-| 4 | 隔离执行 | 待开始 | Phase 3 验收通过 | 沙箱资源、目录、网络和清理测试通过 |
+| 3 | 类型化工具与 Policy Guard | 已完成 | Phase 2 验收通过 | 57 个测试通过，策略拒绝和工具执行均留 AuditEvent |
+| 4 | 隔离执行 | 进行中 | Phase 3 验收通过 | 先完成 Sandbox 协议和 Fake Sandbox，再接 Docker |
 | 5 | 模型适配与 Prompt 纪律 | 待开始 | Fake Runtime 稳定 | Fake/真实适配器产生相同已校验 Action |
 | 6 | TSECBENCH Local | 待开始 | 沙箱和适配器契约稳定 | 已授权样例任务端到端运行 |
 | 7 | 普通 CTF Benchmark | 待开始 | TSECBENCH 基线稳定 | 可复现实验报告和成本记录 |
