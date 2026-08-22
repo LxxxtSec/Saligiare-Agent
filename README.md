@@ -16,7 +16,7 @@ Saligiare 是一个面向授权本地安全 benchmark 的可学习、可审计 A
 
 ## 当前阶段
 
-当前处于 Parse 0：建立可复现的 Python 工程基础。
+当前已完成 v0.1.0 本地可审计基线，详见 [`docs/V1.md`](docs/V1.md)。下一步进入 TSECBENCH Local 适配器开发。
 
 ## 环境要求
 
@@ -77,6 +77,7 @@ docs/           # 路线图、研究笔记和问题记录
 ## 文档
 
 - [学习路线图](docs/ROADMAP.md)
+- [v0.1.0 本地基线说明](docs/V1.md)
 - [问题与解决记录](docs/问题记录.md)
 
 ## 开发方式

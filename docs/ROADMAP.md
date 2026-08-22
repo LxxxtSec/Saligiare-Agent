@@ -24,7 +24,7 @@ Saligiare 是一个面向**授权本地 benchmark 环境**的安全 Agent 运行
 | 已完成 | 参考 Agent 到 Saligiare 组件的汇总 | `docs/research/benchmark-matrix.md` |
 | 已完成 | Phase 2：Task、Action、Observation、Result、Fake Runtime 和最小 Agent Loop | 32 个测试通过，已推送 |
 | 已完成 | Phase 3：Tool Registry、Policy Guard、AuditLog 和 ToolRunner | 57 个测试通过，已推送 |
-| 已完成 | Phase 4：隔离执行接口和 Sandbox | `FakeSandbox`、Docker 后端、非 root 最小镜像和真实 smoke test 已完成 |
+| 已完成 | Phase 4-5：隔离执行与模型适配 | Docker smoke test、结构化模型、有限重试和 Prompt 版本化已完成；见 `docs/V1.md` |
 
 研究分支可以作为学习资料保留。进入代码实现前，先将研究分支合并到 `main`，再从最新 `main` 创建小而聚焦的实现分支。不要在研究分支上混入 Phase 2 代码。
 
@@ -167,7 +167,7 @@ Benchmark 适配器 -> Task -> Agent Runtime -> Policy Guard -> Sandbox Tools
 | 2 | 核心协议与 Fake Runtime | 已完成 | 研究矩阵完成 | 32 个无网络测试通过，覆盖状态转换和停止条件 |
 | 3 | 类型化工具与 Policy Guard | 已完成 | Phase 2 验收通过 | 57 个测试通过，策略拒绝和工具执行均留 AuditEvent |
 | 4 | 隔离执行 | 已完成 | Phase 3 验收通过 | Fake Sandbox、Docker 后端和真实 smoke test 通过；`73 passed, 1 skipped` |
-| 5 | 模型适配与 Prompt 纪律 | 下一步 | Fake Runtime 和 Sandbox 稳定 | Fake/真实适配器产生相同已校验 Action |
+| 5 | 模型适配与 Prompt 纪律 | v1 已完成 | Fake Runtime 和 Sandbox 稳定 | Fake Provider 产生已校验 Action；Prompt 有版本；错误重试有上限 |
 | 6 | TSECBENCH Local | 待开始 | 沙箱和适配器契约稳定 | 已授权样例任务端到端运行 |
 | 7 | 普通 CTF Benchmark | 待开始 | TSECBENCH 基线稳定 | 可复现实验报告和成本记录 |
 | 8 | CyberGym/代码漏洞任务 | 待开始 | Patch Task 协议完成 | pre/post patch evaluator 隔离运行 |
@@ -385,7 +385,7 @@ tests/models/
 
 只有当 Fake Model 的测试稳定后，才引入 OpenAI-compatible Adapter。API Key 只写入本地 `.env`；仓库只提交 `.env.example`。
 
-**验收门槛**：一段保存的 Fake Provider 响应和一次已授权的真实调用，都能产生相同的已校验 `Action` 接口。模型错误不能导致无限重试。
+**v1 验收门槛**：一段保存的 Fake Provider 响应能产生已校验的 `Action`，Prompt 版本和上下文可追踪，模型错误不能导致无限重试，并且端到端测试能经过 Policy Guard 和工具执行。真实模型调用推迟到后续版本，不能用未验证的 API 调用冒充验收证据。
 
 ### Phase 6：TSECBENCH Local 适配器（第 11-12 周）
 
