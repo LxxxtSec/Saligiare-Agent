@@ -74,6 +74,9 @@ class TsecbenchSdkClient(TsecbenchClient):
         )
 
     def submit_flag(self, unique_code: str, flag: str) -> TsecbenchSubmitResult:
+        if not 1 <= len(flag) <= 4_096:
+            raise ValueError("flag length must be between 1 and 4096 characters")
+
         raw = self._sdk_client.submit_flag(unique_code, flag)
         names = (
             "correct",

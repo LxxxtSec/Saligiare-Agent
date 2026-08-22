@@ -49,7 +49,7 @@ class TsecbenchTaskFactory:
                 "benchmark": "tsecbench",
                 "challenge_code": challenge.unique_code,
                 "difficulty": challenge.difficulty,
-                "level": challenge.level,
+                "level": str(challenge.level),
                 "flag_count": str(challenge.flag_count),
             },
         )

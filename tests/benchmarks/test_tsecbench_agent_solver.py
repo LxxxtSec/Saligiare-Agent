@@ -21,7 +21,7 @@ def make_challenge() -> TsecbenchChallenge:
         unique_code="challenge-001",
         description="授权测试题",
         difficulty="easy",
-        level="normal",
+        level=1,
         total_score=100,
         flag_count=1,
         correct_flag_count=0,

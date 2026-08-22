@@ -11,9 +11,9 @@ class TsecbenchChallenge(BaseModel):
     )
 
     unique_code: str = Field(min_length=1)
-    description: str = Field(min_length=1)
+    description: str | None = None
     difficulty: str = Field(min_length=1)
-    level: str = Field(min_length=1)
+    level: int = Field(ge=0)
     total_score: int = Field(ge=0)
     flag_count: int = Field(gt=0)
     correct_flag_count: int = Field(ge=0)

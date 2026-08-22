@@ -13,7 +13,7 @@ def make_challenge() -> TsecbenchChallenge:
         unique_code="challenge-001",
         description="授权本地测试题",
         difficulty="medium",
-        level="normal",
+        level=1,
         total_score=200,
         flag_count=2,
         correct_flag_count=0,

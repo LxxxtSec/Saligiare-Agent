@@ -82,6 +82,8 @@ result = runner.run_file(
 - `SubmitResult`：正确性、得分、累计分数和 flag 进度；
 - `CloseResult`：容器是否成功关闭。
 
+其中 `Challenge.description` 允许为 `null`，`Challenge.level` 是整数；提交 flag 前必须满足长度 `1~4096`。这些约束与官方 API 文档保持一致。
+
 `TsecbenchOfficialRunner` 只编排生命周期，实际网络请求由注入的 `TsecbenchClient` 负责。这样可以用 Fake Client 测试生命周期，也可以在确认依赖和 VPN 环境后接入官方 `tsec-benchmark` SDK。
 
 ## 官方 SDK 包装器

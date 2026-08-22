@@ -1,15 +1,17 @@
 from dataclasses import dataclass
 from typing import Self
 
+import pytest
+
 from saligiare.benchmarks.tsecbench.sdk_adapter import TsecbenchSdkClient
 
 
 @dataclass
 class RawChallenge:
     unique_code: str = "challenge-001"
-    description: str = "授权测试题"
+    description: str | None = "授权测试题"
     difficulty: str = "easy"
-    level: str = "normal"
+    level: int = 1
     total_score: int = 100
     flag_count: int = 1
     correct_flag_count: int = 0
@@ -99,3 +101,13 @@ def test_sdk_adapter_maps_official_sdk_data_classes() -> None:
     assert closed.closed is True
     assert raw_client.entered is True
     assert raw_client.exited is True
+
+
+def test_sdk_adapter_accepts_null_description_and_rejects_invalid_flag_length() -> None:
+    raw_client = RawSdkClient()
+    raw_client.list_challenges = lambda: [RawChallenge(description=None)]
+
+    with TsecbenchSdkClient(raw_client) as client:
+        assert client.list_challenges()[0].description is None
+        with pytest.raises(ValueError, match="between 1 and 4096"):
+            client.submit_flag("challenge-001", "")
