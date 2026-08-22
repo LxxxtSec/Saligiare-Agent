@@ -11,13 +11,13 @@ from saligiare.sandbox.docker import DockerSandbox
     os.environ.get("SALIGIARE_DOCKER_SMOKE") != "1",
     reason="Docker smoke test requires explicit SALIGIARE_DOCKER_SMOKE=1",
 )
-def test_docker_sandbox_runs_printf(tmp_path: Path) -> None:
+def test_docker_sandbox_runs_busybox_printf(tmp_path: Path) -> None:
     image = os.environ.get("SALIGIARE_SANDBOX_IMAGE", "saligiare-sandbox:test")
     sandbox = DockerSandbox(image=image, workspace=tmp_path)
 
     result = sandbox.execute(
         SandboxRequest(
-            argv=("/bin/printf", "hello"),
+            argv=("/bin/busybox", "printf", "hello"),
             cwd="/workspace",
             timeout_seconds=10,
         ),

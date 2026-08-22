@@ -16,4 +16,4 @@ SALIGIARE_SANDBOX_IMAGE=saligiare-sandbox:test \
 python -m pytest tests/sandbox/test_docker_smoke.py -q
 ```
 
-测试只运行容器内的 `/bin/printf`，不访问公共网络，不执行仓库中的安全项目代码。
+测试只运行 Alpine 镜像内置的 `/bin/busybox printf`，不访问公共网络，不执行仓库中的安全项目代码。

@@ -52,7 +52,10 @@ class DockerSandbox:
             "--tmpfs",
             "/tmp:rw,noexec,nosuid,size=64m",
             "--mount",
-            f"type=bind,src={self._workspace},dst=/workspace,rw",
+            (
+                f"type=bind,source={self._workspace},target=/workspace,"
+                "readonly=false"
+            ),
             "--workdir",
             request.cwd,
             self._image,

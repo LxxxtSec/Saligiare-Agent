@@ -46,6 +46,17 @@ def test_docker_command_has_isolation_defaults() -> None:
     assert "hello" in command
 
 
+def test_docker_command_uses_explicit_writable_workspace_mount() -> None:
+    command = make_sandbox().build_command(make_request())
+
+    mount = command[command.index("--mount") + 1]
+
+    assert mount == (
+        "type=bind,source=/tmp/saligiare-workspace,target=/workspace,"
+        "readonly=false"
+    )
+
+
 def test_docker_command_uses_argument_vector() -> None:
     command = make_sandbox().build_command(
         make_request(argv=("sh", "-c", "printf hello")),
