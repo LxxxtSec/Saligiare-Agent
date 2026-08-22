@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any
+from typing import Any, Protocol
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -31,3 +31,10 @@ class ToolResult(BaseModel):
     status: ToolResultStatus
     summary: str = Field(min_length=1, max_length=4_000)
     data: dict[str, Any] = Field(default_factory=dict)
+
+
+class Tool(Protocol):
+    spec: ToolSpec
+
+    def execute(self, arguments: dict[str, Any]) -> ToolResult:
+        ...
