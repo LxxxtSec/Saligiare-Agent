@@ -1,6 +1,24 @@
 # TSECBENCH Local 适配器（第一版）
 
-当前实现的是 Saligiare 自己的本地夹具协议，不代表已经完整实现 TSECBENCH 官方线上或本地运行器。这样做的目的，是先固定适配器边界和端到端测试，再根据官方版本文档补充协议字段。
+当前实现分成两层：一层是 Saligiare 自己的本地夹具协议，另一层是根据官方页面确认的 Python SDK Agent 侧协议模型。前者用于无网络单元测试，后者只定义接口和生命周期，不在测试中使用真实 Token、VPN 或远程靶场。
+
+官方来源：<https://tsecbench.zc.tencent.com/benchmark/prepare/4?mode=local>
+
+官方页面确认的 Agent 侧流程为：
+
+```text
+TSecBenchmark(base_url, token)
+  -> VPN 预检
+  -> list_challenges()
+  -> start_challenge(unique_code)
+  -> 使用 started.container_addr 解题
+  -> submit_flag(unique_code, flag)
+  -> close_challenge(unique_code)
+```
+
+SDK 负责 Agent 视角的流程，不负责创建 benchmark 任务或连接 VPN。`BENCHMARK_TOKEN`、`BENCHMARK_BASE_URL` 和 VPN 配置由平台在创建跑分任务后提供。
+
+官方页面还明确：一个题目可以有多个 flag 和多个 `container_addr`；已完成题目应跳过；容器无论解题成功与否都应关闭。
 
 ## 本地夹具格式
 
@@ -53,6 +71,20 @@ result = runner.run_file(
 ```
 
 输入和输出路径由宿主程序控制，模型只能产生 `Action`，不能修改 benchmark 文件或选择输出路径。
+
+## 官方协议模型
+
+`src/saligiare/benchmarks/tsecbench/official.py` 对官方 SDK 的主要数据类进行了严格建模：
+
+- `Challenge`：题目描述、难度、分数、flag 进度、容器状态和地址；
+- `StartResult`：启动后的题目唯一标识和 `IP:端口` 地址数组；
+- `HintResult`：提示内容；
+- `SubmitResult`：正确性、得分、累计分数和 flag 进度；
+- `CloseResult`：容器是否成功关闭。
+
+`TsecbenchOfficialRunner` 只编排生命周期，实际网络请求由注入的 `TsecbenchClient` 负责。这样可以用 Fake Client 测试生命周期，也可以在确认依赖和 VPN 环境后接入官方 `tsec-benchmark` SDK。
+
+页面列出的错误包括 VPN 预检失败、任务/题目不存在、状态冲突、重复提交、资源不可用、服务端错误、参数校验错误和连接错误。第一版 Runner 不吞掉这些错误，由上层决定是否重试或停止，并把错误分类接入后续 Trace。
 
 ## 安全边界
 
