@@ -16,6 +16,7 @@ class ModelRequest(BaseModel):
     task: Task
     observations: tuple[Observation, ...] = ()
     prompt_version: str = Field(default="v1", min_length=1)
+    prompt: str = Field(default="", max_length=100_000)
 
 
 class TextModelProvider(Protocol):

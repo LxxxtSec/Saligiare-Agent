@@ -5,6 +5,7 @@ from saligiare.core.task import ApprovalLevel, Task, TaskMode
 from saligiare.models.base import ModelRequest
 from saligiare.models.provider import FakeProvider
 from saligiare.models.structured import StructuredActionModel
+from saligiare.prompts.template import PromptTemplate
 
 
 def make_task() -> Task:
@@ -40,6 +41,20 @@ def test_structured_model_converts_json_to_action() -> None:
     assert isinstance(action, Action)
     assert action.action_id == "action-001"
     assert provider.requests[0].prompt_version == "security-v1"
+    assert provider.requests[0].prompt
+
+
+def test_structured_model_uses_custom_prompt_template() -> None:
+    provider = FakeProvider(("{\"action\":null}",))
+    template = PromptTemplate(
+        version="custom-v3",
+        system_instruction="Use only authorized tools.",
+    )
+    model = StructuredActionModel(provider, prompt_template=template)
+
+    assert model.next_action(make_task(), ()) is None
+    assert provider.requests[0].prompt_version == "custom-v3"
+    assert provider.requests[0].prompt.startswith("Use only authorized tools.")
 
 
 def test_structured_model_supports_explicit_stop_response() -> None:

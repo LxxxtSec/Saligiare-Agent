@@ -4,6 +4,10 @@ from saligiare.core.action import Action
 from saligiare.core.observation import Observation
 from saligiare.core.task import Task
 from saligiare.models.base import ModelRequest, TextModelProvider
+from saligiare.prompts.template import (
+    DEFAULT_SYSTEM_INSTRUCTION,
+    PromptTemplate,
+)
 
 
 class StructuredActionResponse(BaseModel):
@@ -20,12 +24,16 @@ class StructuredActionModel:
         self,
         provider: TextModelProvider,
         prompt_version: str = "v1",
+        prompt_template: PromptTemplate | None = None,
     ) -> None:
         if not prompt_version.strip():
             raise ValueError("prompt_version must not be blank")
 
         self._provider = provider
-        self._prompt_version = prompt_version
+        self._prompt_template = prompt_template or PromptTemplate(
+            version=prompt_version,
+            system_instruction=DEFAULT_SYSTEM_INSTRUCTION,
+        )
 
     def next_action(
         self,
@@ -35,7 +43,8 @@ class StructuredActionModel:
         request = ModelRequest(
             task=task,
             observations=observations,
-            prompt_version=self._prompt_version,
+            prompt_version=self._prompt_template.version,
+            prompt=self._prompt_template.render(task, observations),
         )
         raw_response = self._provider.complete(request)
 
