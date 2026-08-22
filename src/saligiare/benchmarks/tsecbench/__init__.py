@@ -11,6 +11,10 @@ from saligiare.benchmarks.tsecbench.official import (
     TsecbenchSubmitResult,
 )
 from saligiare.benchmarks.tsecbench.runner import TsecbenchRunner
+from saligiare.benchmarks.tsecbench.sdk_adapter import (
+    TsecbenchSdkClient,
+    create_sdk_client_from_environment,
+)
 
 __all__ = [
     "TsecbenchChallenge",
@@ -20,8 +24,10 @@ __all__ = [
     "TsecbenchHintResult",
     "TsecbenchOfficialRunner",
     "TsecbenchRunner",
+    "TsecbenchSdkClient",
     "TsecbenchSolver",
     "TsecbenchStartResult",
     "TsecbenchSubmitResult",
     "TsecbenchTaskAdapter",
+    "create_sdk_client_from_environment",
 ]

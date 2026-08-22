@@ -84,6 +84,27 @@ result = runner.run_file(
 
 `TsecbenchOfficialRunner` 只编排生命周期，实际网络请求由注入的 `TsecbenchClient` 负责。这样可以用 Fake Client 测试生命周期，也可以在确认依赖和 VPN 环境后接入官方 `tsec-benchmark` SDK。
 
+## 官方 SDK 包装器
+
+`TsecbenchSdkClient` 将官方 SDK 返回的数据类转换为 Saligiare 的严格 Pydantic 模型。真实环境中，凭证只从本地环境变量读取：
+
+```bash
+export BENCHMARK_TOKEN='只在本机 shell 中设置，不要写入仓库'
+export BENCHMARK_BASE_URL='平台发放的 Base URL'
+python -m pip install tsec-benchmark
+```
+
+代码入口：
+
+```python
+from saligiare.benchmarks.tsecbench import create_sdk_client_from_environment
+
+with create_sdk_client_from_environment() as client:
+    challenges = client.list_challenges()
+```
+
+这个入口只创建 SDK 客户端，不会自动开始评测；真正运行前仍需要确认 VPN 已连接、Agent 已授权、评测范围正确，并由调用方显式执行 `TsecbenchOfficialRunner`。
+
 页面列出的错误包括 VPN 预检失败、任务/题目不存在、状态冲突、重复提交、资源不可用、服务端错误、参数校验错误和连接错误。第一版 Runner 不吞掉这些错误，由上层决定是否重试或停止，并把错误分类接入后续 Trace。
 
 ## 安全边界
