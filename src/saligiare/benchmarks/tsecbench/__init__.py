@@ -1,4 +1,8 @@
 from saligiare.benchmarks.tsecbench.adapter import TsecbenchTaskAdapter
+from saligiare.benchmarks.tsecbench.agent_solver import (
+    TsecbenchAgentSolver,
+    TsecbenchFlagExtractor,
+)
 from saligiare.benchmarks.tsecbench.evaluator import TsecbenchEvaluator
 from saligiare.benchmarks.tsecbench.official import (
     TsecbenchChallenge,
@@ -18,10 +22,12 @@ from saligiare.benchmarks.tsecbench.sdk_adapter import (
 from saligiare.benchmarks.tsecbench.task_factory import TsecbenchTaskFactory
 
 __all__ = [
+    "TsecbenchAgentSolver",
     "TsecbenchChallenge",
     "TsecbenchClient",
     "TsecbenchCloseResult",
     "TsecbenchEvaluator",
+    "TsecbenchFlagExtractor",
     "TsecbenchHintResult",
     "TsecbenchOfficialRunner",
     "TsecbenchRunner",

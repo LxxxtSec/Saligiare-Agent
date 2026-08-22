@@ -117,6 +117,22 @@ with create_sdk_client_from_environment() as client:
 
 Factory 只做数据转换，不启动容器、不连接地址，也不授予模型新的 capability。真正可用的工具集合仍由调用方注入并经过 `PolicyGuard` 检查。
 
+## Agent 解题桥接
+
+`TsecbenchAgentSolver` 将 Factory 生成的 `Task` 交给现有 `AgentLoop`。它要求调用方显式注入 `TsecbenchFlagExtractor`，不会从任意模型文本或观察摘要中自动猜测 flag。
+
+只有当 Agent 状态为 `MODEL_STOPPED` 时，Solver 才调用提取器；空 flag 和重复 flag 会被拒绝。Agent 失败、超步数或工具失败都不会进入提交阶段。
+
+```text
+Challenge + StartResult
+  -> TsecbenchTaskFactory
+  -> AgentLoop
+  -> PolicyGuard / ToolRunner
+  -> RuntimeState
+  -> 显式 FlagExtractor
+  -> flags
+```
+
 页面列出的错误包括 VPN 预检失败、任务/题目不存在、状态冲突、重复提交、资源不可用、服务端错误、参数校验错误和连接错误。第一版 Runner 不吞掉这些错误，由上层决定是否重试或停止，并把错误分类接入后续 Trace。
 
 ## 安全边界
