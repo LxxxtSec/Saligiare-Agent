@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 from saligiare.benchmarks.tsecbench.adapter import (
@@ -71,6 +73,18 @@ def test_adapter_round_trips_local_case() -> None:
     assert case.expected_observation_summaries == ("echo completed",)
 
 
+def test_adapter_reads_and_writes_case_file(tmp_path: Path) -> None:
+    adapter = TsecbenchTaskAdapter()
+    input_path = tmp_path / "case.json"
+
+    adapter.dump_case_path(
+        adapter.load_case(make_payload()),
+        input_path,
+    )
+
+    assert adapter.load_path(input_path).task.task_id == "tsecbench-local-001"
+
+
 def test_adapter_rejects_invalid_payload() -> None:
     with pytest.raises(ValueError, match="invalid TSECBENCH"):
         TsecbenchTaskAdapter().load_case("not-json")
@@ -105,3 +119,24 @@ def test_runner_rejects_failed_case() -> None:
 
     assert result.status == "failed"
     assert result.evaluator_verdict == "rejected"
+
+
+def test_runner_writes_result_file(tmp_path: Path) -> None:
+    input_path = tmp_path / "case.json"
+    output_path = tmp_path / "result.json"
+    input_path.write_text(make_payload(), encoding="utf-8")
+    runner = TsecbenchRunner(
+        model=FakeModel(actions=(make_action(),)),
+        executor=make_executor(),
+    )
+
+    result = runner.run_file(
+        input_path,
+        output_path,
+        trace_id="trace-run-file-001",
+    )
+
+    assert result.trace_id == "trace-run-file-001"
+    assert '"task_id":"tsecbench-local-001"' in output_path.read_text(
+        encoding="utf-8",
+    )

@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
@@ -29,6 +30,14 @@ class TsecbenchTaskAdapter:
     def load(self, payload: str) -> Task:
         return self.load_case(payload).task
 
+    def load_path(self, path: Path) -> TsecbenchLocalCase:
+        try:
+            payload = path.read_text(encoding="utf-8")
+        except OSError as exc:
+            raise ValueError(f"unable to read TSECBENCH local case: {path}") from exc
+
+        return self.load_case(payload)
+
     @staticmethod
     def dump_case(case: TsecbenchLocalCase) -> str:
         return json.dumps(
@@ -37,3 +46,13 @@ class TsecbenchTaskAdapter:
             sort_keys=True,
             separators=(",", ":"),
         )
+
+    @staticmethod
+    def dump_case_path(case: TsecbenchLocalCase, path: Path) -> None:
+        try:
+            path.write_text(
+                TsecbenchTaskAdapter.dump_case(case) + "\n",
+                encoding="utf-8",
+            )
+        except OSError as exc:
+            raise ValueError(f"unable to write TSECBENCH local case: {path}") from exc

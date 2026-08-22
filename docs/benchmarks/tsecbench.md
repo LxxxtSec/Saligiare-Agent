@@ -40,6 +40,20 @@ Local JSON
 
 评测器使用确定性规则：Agent 必须正常停止，且观测摘要包含任务声明的所有期望摘要，才返回 `accepted`。这只是本地夹具的演示规则，不能替代官方评测器。
 
+## 文件运行
+
+适配器支持从 UTF-8 JSON 文件读取任务，Runner 可以把统一 `Result` 写入另一个 JSON 文件。输出文件只包含评测结果，不包含模型隐藏推理或凭证。
+
+```python
+result = runner.run_file(
+    Path("case.json"),
+    Path("result.json"),
+    trace_id="trace-local-001",
+)
+```
+
+输入和输出路径由宿主程序控制，模型只能产生 `Action`，不能修改 benchmark 文件或选择输出路径。
+
 ## 安全边界
 
 - 只接受 Pydantic 严格 Schema；
