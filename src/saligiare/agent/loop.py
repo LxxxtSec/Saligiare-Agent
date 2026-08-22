@@ -2,13 +2,13 @@ from typing import Protocol
 
 from saligiare.agent.state import RunStatus, RuntimeState
 from saligiare.core.action import Action
-from saligiare.core.observation import Observation
+from saligiare.core.observation import Observation, ObservationStatus
 from saligiare.core.task import Task
 from saligiare.models.base import ModelAdapter
 
 
 class ActionExecutor(Protocol):
-    def execute(self, action: Action) -> Observation:
+    def run(self, task: Task, action: Action) -> Observation:
         ...
 
 
@@ -44,7 +44,7 @@ class AgentLoop:
 
             try:
                 state = state.record_action(action)
-                observation = self._executor.execute(action)
+                observation = self._executor.run(task, action)
             except (RuntimeError, ValueError) as exc:
                 return state.stop(
                     RunStatus.FAILED,
@@ -52,6 +52,12 @@ class AgentLoop:
                 )
 
             state = state.record_observation(observation)
+
+            if observation.status is ObservationStatus.FAILED:
+                return state.stop(
+                    RunStatus.FAILED,
+                    observation.summary,
+                )
 
         return state.stop(
             RunStatus.MAX_STEPS_REACHED,

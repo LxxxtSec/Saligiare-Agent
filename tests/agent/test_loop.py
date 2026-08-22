@@ -31,7 +31,11 @@ def make_action(action_id: str, path: str) -> Action:
 
 
 class FakeExecutor:
-    def execute(self, action: Action) -> Observation:
+    def run(
+        self,
+        task: Task,
+        action: Action,
+    ) -> Observation:
         return Observation(
             observation_id=f"observation-for-{action.action_id}",
             action_id=action.action_id,
@@ -42,7 +46,11 @@ class FakeExecutor:
 
 
 class FailingExecutor:
-    def execute(self, action: Action) -> Observation:
+    def run(
+        self,
+        task: Task,
+        action: Action,
+    ) -> Observation:
         raise RuntimeError("synthetic executor failure")
 
 
