@@ -105,6 +105,18 @@ with create_sdk_client_from_environment() as client:
 
 这个入口只创建 SDK 客户端，不会自动开始评测；真正运行前仍需要确认 VPN 已连接、Agent 已授权、评测范围正确，并由调用方显式执行 `TsecbenchOfficialRunner`。
 
+## Challenge 到 Task
+
+`TsecbenchTaskFactory` 在题目容器成功启动后，使用 `Challenge` 和 `StartResult` 创建通用 `Task`：
+
+- `task_id` 使用 `tsecbench:<unique_code>`；
+- `scope` 只包含官方返回的 `container_addr`；
+- 默认审批级别为 `dedicated_vm`；
+- 题目难度、等级和 flag 数量写入 metadata；
+- challenge code 不匹配或地址为空时立即拒绝。
+
+Factory 只做数据转换，不启动容器、不连接地址，也不授予模型新的 capability。真正可用的工具集合仍由调用方注入并经过 `PolicyGuard` 检查。
+
 页面列出的错误包括 VPN 预检失败、任务/题目不存在、状态冲突、重复提交、资源不可用、服务端错误、参数校验错误和连接错误。第一版 Runner 不吞掉这些错误，由上层决定是否重试或停止，并把错误分类接入后续 Trace。
 
 ## 安全边界
